@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Jeux Éducatifs ! 🌟</title>
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --background: #F7FFF7;
+            --text: #2F3E46;
+            --story-bg: #FFFDF0;
+            --panel-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: row;
+        }
+
+        /* --- SIDE PANEL LAYOUT --- */
+        .side-panel {
+            width: 290px;
+            background-color: var(--panel-bg);
+            border-right: 4px solid var(--text);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        .side-panel header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .side-panel h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin: 0 0 10px 0;
+            text-shadow: 1px 1px 0px #fff, 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .side-panel p {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background-color: white;
+            border: 3px solid var(--text);
+            padding: 10px 15px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 15px;
+            box-shadow: 0 4px 0 var(--text);
+            transition: all 0.1s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 var(--text);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--text);
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .game-container {
+            background: white;
+            border: 4px solid var(--text);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 8px 0 var(--text);
+            display: none;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .game-container.active {
+            display: block;
+        }
+
+        .game-container h2 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        /* --- GAME MECHANICS ELEMENTS --- */
+        .question {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* Force l'émoji à devenir une silhouette noire parfaite */
+        .shadow-emoji {
+            font-size: 4.5rem;
+            margin-bottom: 15px;
+            display: inline-block;
+            filter: brightness(0);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background-color: #f0f0f0;
+            border: 3px solid var(--text);
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 0 var(--text);
+            transition: background-color 0.2s;
+        }
+
+        .option-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Word Game Elements */
+        .word-slots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            min-height: 60px;
+            flex-wrap: wrap;
+        }
+
+        .slot {
+            width: 45px;
+            height: 45px;
+            border: 3px dashed var(--text);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            background: #fff;
+        }
+
+        .letters-pool {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .letter-tile {
+            width: 45px;
+            height: 45px;
+            background-color: var(--secondary);
+            color: white;
+            border: 3px solid var(--text);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--text);
+        }
+
+        /* Stories Component */
+        .story-box {
+            background-color: var(--story-bg);
+            border: 3px dashed var(--secondary);
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            text-align: left;
+            margin-bottom: 20px;
+            min-height: 150px;
+        }
+        
+        .story-title {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .story-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .story-btn {
+            background-color: white;
+            border: 2px solid var(--text);
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Global Dynamic Sub-components */
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        .success-animation {
+            color: #2ecc71;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .score-board {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: #eee;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        /* --- RESPONSIVE MOBILE ADJUSTMENTS --- */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .side-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 4px solid var(--text);
+                padding: 15px;
+                max-height: auto;
+                overflow-y: visible;
+            }
+            .nav-tabs {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .tab-btn {
+                font-size: 0.95rem;
+                padding: 8px 12px;
+            }
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDE PANEL MENU -->
+    <div class="side-panel">
+        <header>
+            <h1>Jouons & Apprenons ! 🎈</h1>
+            <p>Choisis un défi :</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab(this, 'math')">🔢 Calculs</button>
+            <button class="tab-btn" onclick="switchTab(this, 'words')">🔤 Les Mots</button>
+            <button class="tab-btn" onclick="switchTab(this, 'logic')">🧩 Logique</button>
+            <button class="tab-btn" onclick="switchTab(this, 'colors')">🎨 Couleurs</button>
+            <button class="tab-btn" onclick="switchTab(this, 'odd')">🕵️‍♂️ L'Intrus</button>
+            <button class="tab-btn" onclick="switchTab(this, 'sounds')">🔊 Cris d'Animaux</button>
+            <button class="tab-btn" onclick="switchTab(this, 'shadows')">💡 Jeu des Ombres</button>
+            <button class="tab-btn" onclick="switchTab(this, 'health')">🥦 Miam ou Beurk ?</button>
+            <button class="tab-btn" onclick="switchTab(this, 'world')">🌍 Découverte</button>
+            <button class="tab-btn" onclick="switchTab(this, 'stories')">📖 Histoires</button>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE SCREEN STORAGE -->
+    <div class="main-content">
+
+        <!-- 1. MATH GAME -->
+        <div id="math-game" class="game-container active">
+            <h2>Le Roi du Calcul 👑</h2>
+            <div class="question" id="math-question">5 + 3 = ?</div>
+            <div class="options-grid" id="math-options"></div>
+            <div class="feedback" id="math-feedback"></div>
+            <div class="score-board">Score: <span id="math-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 2. WORD PUZZLE -->
+        <div id="words-game" class="game-container">
+            <h2>Trouve le Mot 🐶</h2>
+            <p>Remets les lettres dans le bon ordre !</p>
+            <div class="question" id="word-hint">Un animal qui aboie</div>
+            <div class="word-slots" id="word-slots"></div>
+            <div class="letters-pool" id="word-letters"></div>
+            <div class="feedback" id="word-feedback"></div>
+            <div class="score-board">Score: <span id="word-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 3. LOGIC PATTERNS -->
+        <div id="logic-game" class="game-container">
+            <h2>Suite Logique 🍎</h2>
+            <p>Qu'est-ce qui vient juste après ?</p>
+            <div class="question" id="logic-sequence">🍎 🍌 🍎 🍌 ?</div>
+            <div class="options-grid" id="logic-options"></div>
+            <div class="feedback" id="logic-feedback"></div>
+            <div class="score-board">Score: <span id="logic-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 4. COLOR MIXING -->
+        <div id="colors-game" class="game-container">
+            <h2>Le Magicien des Couleurs 🎨</h2>
+            <p>Mélange les couleurs pour trouver le résultat !</p>
+            <div class="question" id="color-question">Bleu + Jaune = ?</div>
+            <div class="options-grid" id="color-options"></div>
+            <div class="feedback" id="color-feedback"></div>
+            <div class="score-board">Score: <span id="colors-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 5. FIND THE ODD ONE OUT -->
+        <div id="odd-game" class="game-container">
+            <h2>Trouve l'Intrus ! 🕵️‍♂️</h2>
+            <p>Quel élément ne va pas du tout avec les autres ?</p>
+            <div class="question" id="odd-question">Chargement...</div>
+            <div class="options-grid" id="odd-options"></div>
+            <div class="feedback" id="odd-feedback"></div>
+            <div class="score-board">Score: <span id="odd-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 6. ANIMAL SOUNDS -->
+        <div id="sounds-game" class="game-container">
+            <h2>Qui fait ce bruit ? 🔊</h2>
+            <p>Écoute ou lis le cri de l'animal caché !</p>
+            <div class="question" id="sound-question">"Miaou ! Miaou !"</div>
+            <div class="options-grid" id="sound-options"></div>
+            <div class="feedback" id="sounds-feedback"></div>
+            <div class="score-board">Score: <span id="sounds-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 7. SHADOW MATCHING -->
+        <div id="shadows-game" class="game-container">
+            <h2>L'Ombre Mystère 💡</h2>
+            <p>À qui appartient cette ombre noire ?</p>
+            <!-- Ajout de la classe shadow-emoji pour forcer le noir total -->
+            <div class="shadow-emoji" id="shadow-question">🐈⬛</div>
+            <div class="options-grid" id="shadow-options"></div>
+            <div class="feedback" id="shadow-feedback"></div>
+            <div class="score-board">Score: <span id="shadow-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 8. HEALTHY ALIMENTATION SORTING -->
+        <div id="health-game" class="game-container">
+            <h2>Équilibre et Santé 🥦</h2>
+            <p>Cet aliment est-il super bon pour donner de la force au corps ?</p>
+            <div class="question" id="health-question">Chargement...</div>
+            <div class="options-grid" id="health-options"></div>
+            <div class="feedback" id="health-feedback"></div>
+            <div class="score-board">Score: <span id="health-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 9. WORLD DISCOVERY -->
+        <div id="world-game" class="game-container">
+            <h2>Explorateur du Monde 🌍</h2>
+            <p>Trouve la bonne réponse à la question !</p>
+            <div class="question" id="world-question">Où vit le pingouin ?</div>
+            <div class="options-grid" id="world-options"></div>
+            <div class="feedback" id="world-feedback"></div>
+            <div class="score-board">Score: <span id="world-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 10. STORIES TALES -->
+        <div id="stories-game" class="game-container">
+            <h2>Le Coin des Histoires 📖</h2>
+            <p>Lis la petite histoire et découvre sa morale !</p>
+            <div class="story-box">
+                <h3 class="story-title" id="story-title">Titre</h3>
+                <div id="story-content">Contenu de l'histoire...</div>
+            </div>
+            <div class="story-controls">
+                <button class="story-btn" onclick="changeStory(-1)">⬅️ Précédente</button>
+                <button class="story-btn" onclick="changeStory(1)">Suivante ➡️</button>
+            </div>
+            <div class="score-board">Histoires lues: <span id="stories-count">1</span> / <span id="stories-total">0</span> 🎖️</div>
+        </div>
+
+    </div>
+
+    <script>
+        // Tab switching controller
+        function switchTab(buttonElement, tabName) {
+            document.querySelectorAll('.game-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`${tabName}-game`).classList.add('active');
+            buttonElement.classList.add('active');
+        }
+
+        // --- MATH GAME LOGIC ---
+        let mathScore = 0;
+        let currentMathAnswer = 0;
+
+        function generateMathQuestion() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operationType = Math.floor(Math.random() * 3); 
+            
+            let questionText, correctAnswer;
+            if (operationType === 0) {
+                questionText = `${num1} + ${num2} = ?`;
+                correctAnswer = num1 + num2;
+            } else if (operationType === 1) {
+                const max = Math.max(num1, num2);
+                const min = Math.min(num1, num2);
+                questionText = `${max} - ${min} = ?`;
+                correctAnswer = max - min;
+            } else {
+                const mult1 = Math.floor(Math.random() * 5) + 1;
+                const mult2 = Math.floor(Math.random() * 5) + 1;
+                questionText = `${mult1} × ${mult2} = ?`;
+                correctAnswer = mult1 * mult2;
+            }
+
+            currentMathAnswer = correctAnswer;
+            document.getElementById('math-question').innerText = questionText;
+            document.getElementById('math-feedback').innerHTML = '';
+
+            let options = [correctAnswer];
+            while(options.length < 4) {
+                let wrong = correctAnswer + (Math.floor(Math.random() * 7) - 3);
+                if(wrong >= 0 && !options.includes(wrong)) options.push(wrong);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('math-options');
+            optionsContainer.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkMathAnswer(opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkMathAnswer(chosen) {
+            const feedback = document.getElementById('math-feedback');
+            if(chosen === currentMathAnswer) {
+                mathScore++;
+                document.getElementById('math-score').innerText = mathScore;
+                feedback.innerHTML = '<span class="success-animation">Bravo ! 🎉 +1 Étoile !</span>';
+                setTimeout(generateMathQuestion, 1500);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Essaie encore ! 🤔</span>';
+            }
+        }
+
+        // --- WORD PUZZLE LOGIC ---
+        const wordsList = [
+            { word: 'CHIEN', hint: '🐶 Un animal qui aboie' },
+            { word: 'CHAT', hint: '🐱 Un animal qui miaule' },
+            { word: 'POMME', hint: '🍎 Un fruit rouge ou vert' },
+            { word: 'ECOLE', hint: '🎒 L\'endroit où l\'on apprend' },
+            { word: 'AVION', hint: '✈️ Il vole dans le ciel' },
+            { word: 'SOLEIL', hint: '☀️ Il brille et chauffe en été' },
+            { word: 'MAISON', hint: '🏠 Le lieu où habite la famille' },
+            { word: 'LIVRE', hint: '📖 On le tourne pour lire des histoires' },
+            { word: 'BALLON', hint: '⚽ On shoote dedans pour marquer un but' },
+            { word: 'OISEAU', hint: '🐦 Il a des plumes et chante le matin' }
+        ];
+        let wordIndex = 0;
+        let wordScore = 0;
+        let currentWordProgress = [];
+
+        function initWordGame() {
+            const currentItem = wordsList[wordIndex];
+            document.getElementById('word-hint').innerText = currentItem.hint;
+            document.getElementById('word-feedback').innerHTML = '';
+            currentWordProgress = [];
+
+            const slotsContainer = document.getElementById('word-slots');
+            slotsContainer.innerHTML = '';
+            for(let i=0; i<currentItem.word.length; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'slot';
+                slotsContainer.appendChild(slot);
+            }
+
+            let letters = currentItem.word.split('').sort(() => Math.random() - 0.5);
+            const lettersContainer = document.getElementById('word-letters');
+            lettersContainer.innerHTML = '';
+            
+            letters.forEach((letter) => {
+                const tile = document.createElement('div');
+                tile.className = 'letter-tile';
+                tile.innerText = letter;
+                tile.onclick = () => selectLetter(tile, letter);
+                lettersContainer.appendChild(tile);
+            });
+        }
+
+        function selectLetter(tile, letter) {
+            const currentItem = wordsList[wordIndex];
+            const slots = document.getElementById('word-slots').children;
+            
+            if(currentWordProgress.length < currentItem.word.length) {
+                slots[currentWordProgress.length].innerText = letter;
+                currentWordProgress.push(letter);
+                tile.style.visibility = 'hidden';
+            }
+
+            if(currentWordProgress.length === currentItem.word.length) {
+                const finalWord = currentWordProgress.join('');
+                const feedback = document.getElementById('word-feedback');
+                
+                if(finalWord === currentItem.word) {
+                    wordScore++;
+                    document.getElementById('word-score').innerText = wordScore;
+                    feedback.innerHTML = '<span class="success-animation">Magnifique ! 🌟</span>';
+                    wordIndex = (wordIndex + 1) % wordsList.length;
+                    setTimeout(initWordGame, 2000);
+                } else {
+                    feedback.innerHTML = '<span style="color: #e74c3c">Oups, trompé ! On recommence ? 🔁</span>';
+                    setTimeout(initWordGame, 1500);
+                }
+            }
+        }
+
+        // --- LOGIC GAME LOGIC ---
+        const logicPuzzles = [
+            { seq: '🍎 🍌 🍎 🍌 ?', ans: '🍎', opts: ['🍎', '🍌', '🍇', '🍊'] },
+            { seq: '🚗 ✈️ 🚗 ✈️ ?', ans: '🚗', opts: ['🚗', '✈️', '🚂', '🚲'] },
+            { seq: '🔵 🔴 🔴 🔵 🔴 ?', ans: '🔴', opts: ['🔵', '🔴', '🟢', '🟡'] },
+            { seq: '1 2 3 1 2 ?', ans: '3', opts: ['1', '2', '3', '4'] },
+            { seq: '☀️ ☁️ 🌧️ ☀️ ☁️ ?', ans: '🌧️', opts: ['☀️', '☁️', '🌧️', '❄️'] },
+            { seq: '🔺 🟩 🔺 🟩 ?', ans: '🔺', opts: ['🔺', '🟩', '🟡', '🔷'] },
+            { seq: '🐸 🦆 🐟 🐸 🦆 ?', ans: '🐟', opts: ['🐸', '🦆', '🐟', '🦀'] },
+            { seq: '2 4 6 8 ?', ans: '10', opts: ['7', '9', '10', '12'] }
+        ];
+        let logicIndex = 0;
+        let logicScore = 0;
+
+        function initLogicGame() {
+            const puzzle = logicPuzzles[logicIndex];
+            document.getElementById('logic-sequence').innerText = puzzle.seq;
+            document.getElementById('logic-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('logic-options');
+            optionsContainer.innerHTML = '';
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkLogicAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkLogicAnswer(chosen, correct) {
+            const feedback = document.getElementById('logic-feedback');
+            if(chosen === correct) {
+                logicScore++;
+                document.getElementById('logic-score').innerText = logicScore;
+                feedback.innerHTML = '<span class="success-animation">Super intelligent ! 🧠✨</span>';
+                logicIndex = (logicIndex + 1) % logicPuzzles.length;
+                setTimeout(initLogicGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Regarde bien la suite ! 🔍</span>';
+            }
+        }
+
+        // --- COLOR GAME LOGIC ---
+        const colorPuzzles = [
+            { question: 'Bleu 🔵 + Jaune 🟡 = ?', ans: 'Vert 🟢', opts: ['Vert 🟢', 'Orange 🟠', 'Violet 🟣', 'Rose 🌸'] },
+            { question: 'Rouge 🔴 + Jaune 🟡 = ?', ans: 'Orange 🟠', opts: ['Vert 🟢', 'Orange 🟠', 'Violet 🟣', 'Marron 🟫'] },
+            { question: 'Rouge 🔴 + Bleu 🔵 = ?', ans: 'Violet 🟣', opts: ['Vert 🟢', 'Orange 🟠', 'Violet 🟣', 'Gris 🪙'] },
+            { question: 'Rouge 🔴 + Blanc ⚪ = ?', ans: 'Rose 🌸', opts: ['Rose 🌸', 'Violet 🟣', 'Orange 🟠', 'Noir ⚫'] },
+            { question: 'Noir ⚫ + Blanc ⚪ = ?', ans: 'Gris 🪙', opts: ['Marron 🟫', 'Gris 🪙', 'Bleu 🔵', 'Violet 🟣'] }
+        ];
+        let colorsIndex = 0;
+        let colorsScore = 0;
+
+        function initColorsGame() {
+            const puzzle = colorPuzzles[colorsIndex];
+            document.getElementById('color-question').innerText = puzzle.question;
+            document.getElementById('color-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('color-options');
+            optionsContainer.innerHTML = '';
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkColorsAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkColorsAnswer(chosen, correct) {
+            const feedback = document.getElementById('color-feedback');
+            if(chosen === correct) {
+                colorsScore++;
+                document.getElementById('colors-score').innerText = colorsScore;
+                feedback.innerHTML = '<span class="success-animation">Artiste de génie ! 🎨✨</span>';
+                colorsIndex = (colorsIndex + 1) % colorPuzzles.length;
+                setTimeout(initColorsGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Réessaie le mélange ! 🧪</span>';
+            }
+        }
+
+        // --- FIND THE ODD ONE OUT LOGIC ---
+        const oddPuzzles = [
+            { question: "Quel mot n'est pas un animal ?", ans: 'Voiture 🚗', opts: ['Lion 🦁', 'Chat 🐱', 'Voiture 🚗', 'Oiseau 🐦'] },
+            { question: "Lequel n'est pas un fruit ?", ans: 'Carotte 🥕', opts: ['Pomme 🍎', 'Fraise 🍓', 'Banane 🍌', 'Carotte 🥕'] },
+            { question: "Trouve l'intrus du ciel :", ans: 'Poisson 🐟', opts: ['Nuage ☁️', 'Soleil ☀️', 'Poisson 🐟', 'Avion ✈️'] },
+            { question: "Qu'est-ce qui ne se mange pas ?", ans: 'Crayon ✏️', opts: ['Pain 🥖', 'Gâteau 🍰', 'Crayon ✏️', 'Pizza 🍕'] },
+            { question: "Lequel n'est pas une couleur ?", ans: 'Table 🪑', opts: ['Rouge 🔴', 'Vert 🟢', 'Bleu 🔵', 'Table 🪑'] }
+        ];
+        let oddIndex = 0;
+        let oddScore = 0;
+
+        function initOddGame() {
+            const puzzle = oddPuzzles[oddIndex];
+            document.getElementById('odd-question').innerText = puzzle.question;
+            document.getElementById('odd-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('odd-options');
+            optionsContainer.innerHTML = '';
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkOddAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkOddAnswer(chosen, correct) {
+            const feedback = document.getElementById('odd-feedback');
+            if(chosen === correct) {
+                oddScore++;
+                document.getElementById('odd-score').innerText = oddScore;
+                feedback.innerHTML = '<span class="success-animation">Œil de lynx ! 🕵️‍♂️✨</span>';
+                oddIndex = (oddIndex + 1) % oddPuzzles.length;
+                setTimeout(initOddGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Regarde bien la liste ! 🧐</span>';
+            }
+        }
+
+        // --- ANIMAL SOUNDS LOGIC ---
+        const soundPuzzles = [
+            { cry: '"Ouaf ! Ouaf !"', ans: 'Le Chien 🐶', opts: ['Le Chat 🐱', 'Le Chien 🐶', 'La Vache 🐮', 'Le Mouton 🐑'] },
+            { cry: '"Meuhhh !"', ans: 'La Vache 🐮', opts: ['La Vache 🐮', 'Le Cheval 🐴', 'Le Lion 🦁', 'Le Canard 🦆'] },
+            { cry: '"Cui-cui !"', ans: 'L\'Oiseau 🐦', opts: ['Le Poisson 🐟', 'La Grenouille 🐸', 'L\'Oiseau 🐦', 'Le Souris 🐭'] },
+            { cry: '"Coin-coin !"', ans: 'Le Canard 🦆', opts: ['Le Poulet 🐔', 'Le Canard 🦆', 'Le Cochon 🐷', 'Le Loup 🐺'] },
+            { cry: '"Bêêê !"', ans: 'Le Mouton 🐑', opts: ['Le Singe 🐒', 'L\'Ours 🐻', 'Le Mouton 🐑', 'Le Chat 🐱'] }
+        ];
+        let soundsIndex = 0;
+        let soundsScore = 0;
+
+        function initSoundsGame() {
+            const puzzle = soundPuzzles[soundsIndex];
+            document.getElementById('sound-question').innerText = puzzle.cry;
+            document.getElementById('sounds-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('sound-options');
+            optionsContainer.innerHTML = '';
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkSoundsAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkSoundsAnswer(chosen, correct) {
+            const feedback = document.getElementById('sounds-feedback');
+            if(chosen === correct) {
+                soundsScore++;
+                document.getElementById('sounds-score').innerText = soundsScore;
+                feedback.innerHTML = '<span class="success-animation">Bonne oreille ! 🔊🎶</span>';
+                soundsIndex = (soundsIndex + 1) % soundPuzzles.length;
+                setTimeout(initSoundsGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Ce n\'est pas son cri ! 🙉</span>';
+            }
+        }
+
+        // --- SHADOW MATCHING LOGIC ---
+        const shadowPuzzles = [
+            { shadow: '🐈', ans: 'Le Chat 🐱', opts: ['Le Chat 🐱', 'Le Lapin 🐰', 'L\'Oiseau 🐦', 'L\'Éléphant 🐘'] },
+            { shadow: '✈️', ans: 'L\'Avion ✈️', opts: ['La Voiture 🚗', 'Le Bateau 🚢', 'L\'Avion ✈️', 'Le Vélo 🚲'] },
+            { shadow: '🌳', ans: 'L\'Arbre 🌳', opts: ['La Fleur 🌸', 'L\'Arbre 🌳', 'La Maison 🏠', 'Le Nuage ☁️'] },
+            { shadow: '🐒', ans: 'Le Singe 🐒', opts: ['Le Singe 🐒', 'Le Chien 🐶', 'Le Lion 🦁', 'Le Dauphin 🐬'] },
+            { shadow: '🍌', ans: 'La Banane 🍌', opts: ['La Pomme 🍎', 'La Fraise 🍓', 'La Banane 🍌', 'La Carotte 🥕'] }
+        ];
+        let shadowIndex = 0;
+        let shadowScore = 0;
+
+        function initShadowsGame() {
+            const puzzle = shadowPuzzles[shadowIndex];
+            document.getElementById('shadow-question').innerText = puzzle.shadow;
+            document.getElementById('shadow-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('shadow-options');
+            optionsContainer.innerHTML = '';
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkShadowAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkShadowAnswer(chosen, correct) {
+            const feedback = document.getElementById('shadow-feedback');
+            if(chosen === correct) {
+                shadowScore++;
+                document.getElementById('shadow-score').innerText = shadowScore;
+                feedback.innerHTML = '<span class="success-animation">Excellente vision ! 🕵️‍♂️💡</span>';
+                shadowIndex = (shadowIndex + 1) % shadowPuzzles.length;
+                setTimeout(initShadowsGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Regarde bien la forme ! 👁️</span>';
+            }
+        }
+
+        // --- HEALTH FOOD LOGIC ---
+        const healthPuzzles = [
+            { item: 'La Pomme 🍎', ans: 'Super Bon ! 💪', opts: ['Super Bon ! 💪', 'À limiter... 🍭'] },
+            { item: 'Le Bonbon 🍬', ans: 'À limiter... 🍭', opts: ['Super Bon ! 💪', 'À limiter... 🍭'] },
+            { item: 'Le Brocoli 🥦', ans: 'Super Bon ! 💪', opts: ['Super Bon ! 💪', 'À limiter... 🍭'] },
+            { item: 'Le Soda / Cola 🥤', ans: 'À limiter... 🍭', opts: ['Super Bon ! 💪', 'À limiter... 🍭'] },
+            { item: 'La Carotte 🥕', ans: 'Super Bon ! 💪', opts: ['Super Bon ! 💪', 'À limiter... 🍭'] },
+            { item: 'Les Frites 🍟', ans: 'À limiter... 🍭', opts: ['Super Bon ! 💪', 'À limiter... 🍭'] }
+        ];
+        let healthIndex = 0;
+        let healthScore = 0;
+
+        function initHealthGame() {
+            const puzzle = healthPuzzles[healthIndex];
+            document.getElementById('health-question').innerText = puzzle.item;
+            document.getElementById('health-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('health-options');
+            optionsContainer.innerHTML = '';
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkHealthAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkHealthAnswer(chosen, correct) {
+            const feedback = document.getElementById('health-feedback');
+            if(chosen === correct) {
+                healthScore++;
+                document.getElementById('health-score').innerText = healthScore;
+                feedback.innerHTML = '<span class="success-animation">Parfait pour la santé ! 🥦✨</span>';
+                healthIndex = (healthIndex + 1) % healthPuzzles.length;
+                setTimeout(initHealthGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Réfléchis bien aux vitamines ! 🍉</span>';
+            }
+        }
+
+        // --- WORLD DISCOVERY LOGIC ---
+        const worldPuzzles = [
+            { question: 'Qui est le roi de la savane ? 🦁', ans: 'Le Lion', opts: ['Le Lion', 'Le Tigre', 'L\'Éléphant', 'La Girafe'] },
+            { question: 'Quelle planète appelle-t-on la planète bleue ? 🌌', ans: 'La Terre', opts: ['Mars', 'La Terre', 'Jupiter', 'La Lune'] },
+            { question: 'Quel oiseau ne peut pas voler ? 🐧', ans: 'Le Pingouin', opts: ['L\'Aigle', 'Le Moineau', 'Le Pingouin', 'Le Perroquet'] },
+            { question: 'Où trouve-t-on beaucoup de sable et de chameaux ? 🏜️', ans: 'Le Désert', opts: ['La Forêt', 'La Banquise', 'Le Désert', 'La Jungle'] },
+            { question: 'Quel est le plus grand mammifère du monde ? 🐋', ans: 'La Baleine', opts: ['Le Requin', 'L\'Éléphant', 'La Baleine', 'La Girafe'] }
+        ];
+        let worldIndexGame = 0;
+        let worldScore = 0;
+
+        function initWorldGame() {
+            const puzzle = worldPuzzles[worldIndexGame];
+            document.getElementById('world-question').innerText = puzzle.question;
+            document.getElementById('world-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('world-options');
+            optionsContainer.innerHTML = '';
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkWorldAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkWorldAnswer(chosen, correct) {
+            const feedback = document.getElementById('world-feedback');
+            if(chosen === correct) {
+                worldScore++;
+                document.getElementById('world-score').innerText = worldScore;
+                feedback.innerHTML = '<span class="success-animation">Super Explorateur ! 🧭🗺️</span>';
+                worldIndexGame = (worldIndexGame + 1) % worldPuzzles.length;
+                setTimeout(initWorldGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Regarde bien l\'indice ! 🕵️‍♂️</span>';
+            }
+        }
+
+        // --- STORIES LOGIC ---
+        const storiesList = [
+            {
+                title: "🐢 Le Lièvre et la Tortue",
+                content: "Un lièvre se moquait toujours d'une tortue qui marchait très lentement. Un jour, ils firent une course. Le lièvre, trop sûr de lui, s'endormit en chemin. La tortue continua d'avancer à son rythme, sans s'arrêter, et gagna la course ! <br><br><strong>Morale :</strong> Rien ne sert de courir, il faut partir à point et être persévérant."
+            },
+            {
+                title: "🐜 La Cigale et la Fourmi",
+                content: "La Cigale chanta tout l'été pendant que la Fourmi stockait de la nourriture pour l'hiver. Quand la neige arriva, la Cigale n'avait plus rien à manger. Elle alla demander de l'aide à la Fourmi, qui lui dit : 'Vous chantiez ? J'en suis fort aise. Eh bien : dansez maintenant !'<br><br><strong>Morale :</strong> Il faut travailler et être prévoyant pour ne pas manquer plus tard."
+            },
+            {
+                title: "🦁 Le Lion et le Rat",
+                content: "Un grand lion épargna la vie d'un petit rat. Plus tard, le lion fut capturé par des chasseurs et attaché avec de grosses cordes. Le rat accourut et rongea les liens avec ses petites dents, libérant ainsi le roi des animaux !<br><br><strong>Morale :</strong> On a souvent besoin d'un plus petit que soi, il faut respecter tout le monde."
+            },
+            {
+                title: "🦊 Le Corbeau et le Renard",
+                content: "Un corbeau tenait un fromage dans son bec. Un renard rusé, attiré par l'odeur, commença à flatter le corbeau sur sa magnifique voix. Flatté, le corbeau ouvrit grand le bec pour chanter... et laissa tomber son fromage que le renard s'empressa de manger !<br><br><strong>Morale :</strong> Attention aux personnes trop flatteuses qui cherchent à vous tromper."
+            }
+        ];
+        let currentStoryIndex = 0;
+
+        function initStories() {
+            document.getElementById('stories-total').innerText = storiesList.length;
+            renderStory();
+        }
+
+        function renderStory() {
+            const story = storiesList[currentStoryIndex];
+            document.getElementById('story-title').innerText = story.title;
+            document.getElementById('story-content').innerHTML = story.content;
+            document.getElementById('stories-count').innerText = currentStoryIndex + 1;
+        }
+
+        function changeStory(direction) {
+            currentStoryIndex += direction;
+            if (currentStoryIndex < 0) {
+                currentStoryIndex = storiesList.length - 1;
+            } else if (currentStoryIndex >= storiesList.length) {
+                currentStoryIndex = 0;
+            }
+            renderStory();
+        }
+
+        // Run all boot initializations
+        generateMathQuestion();
+        initWordGame();
+        initLogicGame();
+        initColorsGame();
+        initOddGame();
+        initSoundsGame();
+        initShadowsGame();
+        initHealthGame();
+        initWorldGame();
+        initStories();
+    </script>
+</body>
+</html>
