@@ -351,6 +351,7 @@
             <button class="tab-btn active" onclick="switchTab(this, 'math')">🔢 Calculs</button>
             <button class="tab-btn" onclick="switchTab(this, 'words')">🔤 Les Mots</button>
             <button class="tab-btn" onclick="switchTab(this, 'logic')">🧩 Logique</button>
+            <button class="tab-btn" onclick="switchTab(this, 'geometry')">🔺 Géométrie</button>
             <button class="tab-btn" onclick="switchTab(this, 'colors')">🎨 Couleurs</button>
             <button class="tab-btn" onclick="switchTab(this, 'odd')">🕵️‍♂️ L'Intrus</button>
             <button class="tab-btn" onclick="switchTab(this, 'sounds')">🔊 Cris d'Animaux</button>
@@ -397,7 +398,17 @@
             <div class="score-board">Score: <span id="logic-score">0</span> ⭐</div>
         </div>
 
-        <!-- 4. COLOR MIXING -->
+        <!-- 4. UPGRADED GEOMETRY GAME (WITH SIZES & COMPARISONS) -->
+        <div id="geometry-game" class="game-container">
+            <h2>Défis Géométriques & Tailles 🔺📏</h2>
+            <p id="geometry-instruction" style="font-weight: bold; font-size: 1.2rem; color: var(--text);">Trouve la bonne réponse !</p>
+            <div class="question" id="geometry-shape" style="font-size: 3.5rem; margin-bottom: 20px; min-height: 80px; display: flex; justify-content: center; align-items: center; gap: 20px;">🟩</div>
+            <div class="options-grid" id="geometry-options"></div>
+            <div class="feedback" id="geometry-feedback"></div>
+            <div class="score-board">Score: <span id="geometry-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 5. COLOR MIXING -->
         <div id="colors-game" class="game-container">
             <h2>Le Magicien des Couleurs 🎨</h2>
             <p>Mélange les couleurs pour trouver le résultat !</p>
@@ -407,7 +418,7 @@
             <div class="score-board">Score: <span id="colors-score">0</span> ⭐</div>
         </div>
 
-        <!-- 5. FIND THE ODD ONE OUT -->
+        <!-- 6. FIND THE ODD ONE OUT -->
         <div id="odd-game" class="game-container">
             <h2>Trouve l'Intrus ! 🕵️‍♂️</h2>
             <p>Quel élément ne va pas du tout avec les autres ?</p>
@@ -417,7 +428,7 @@
             <div class="score-board">Score: <span id="odd-score">0</span> ⭐</div>
         </div>
 
-        <!-- 6. ANIMAL SOUNDS -->
+        <!-- 7. ANIMAL SOUNDS -->
         <div id="sounds-game" class="game-container">
             <h2>Qui fait ce bruit ? 🔊</h2>
             <p>Écoute ou lis le cri de l'animal caché !</p>
@@ -427,7 +438,7 @@
             <div class="score-board">Score: <span id="sounds-score">0</span> ⭐</div>
         </div>
 
-        <!-- 7. SHADOW MATCHING -->
+        <!-- 8. SHADOW MATCHING -->
         <div id="shadows-game" class="game-container">
             <h2>L'Ombre Mystère 💡</h2>
             <p>À qui appartient cette ombre noire ?</p>
@@ -437,7 +448,7 @@
             <div class="score-board">Score: <span id="shadow-score">0</span> ⭐</div>
         </div>
 
-        <!-- 8. HEALTHY ALIMENTATION SORTING -->
+        <!-- 9. HEALTHY ALIMENTATION SORTING -->
         <div id="health-game" class="game-container">
             <h2>Équilibre et Santé 🥦</h2>
             <p>Cet aliment est-il super bon pour donner de la force au corps ?</p>
@@ -447,7 +458,7 @@
             <div class="score-board">Score: <span id="health-score">0</span> ⭐</div>
         </div>
 
-        <!-- 9. WORLD DISCOVERY -->
+        <!-- 10. WORLD DISCOVERY -->
         <div id="world-game" class="game-container">
             <h2>Explorateur du Monde 🌍</h2>
             <p>Trouve la bonne réponse à la question !</p>
@@ -457,7 +468,7 @@
             <div class="score-board">Score: <span id="world-score">0</span> ⭐</div>
         </div>
 
-        <!-- 10. NEW GAME: MEMORY MATCH -->
+        <!-- 11. MEMORY MATCH -->
         <div id="memory-game" class="game-container">
             <h2>Jeu de Mémoire 🃏</h2>
             <p>Trouve toutes les paires d'animaux cachées !</p>
@@ -466,7 +477,7 @@
             <div class="score-board">Score: <span id="memory-score">0</span> ⭐</div>
         </div>
 
-        <!-- 11. NEW GAME: COUNTING DISCOVERY -->
+        <!-- 12. COUNTING DISCOVERY -->
         <div id="counting-game" class="game-container">
             <h2>Combien d'Étoiles ? ⭐</h2>
             <p>Compte attentivement les objets à l'écran !</p>
@@ -476,7 +487,7 @@
             <div class="score-board">Score: <span id="counting-score">0</span> ⭐</div>
         </div>
 
-        <!-- 12. NEW GAME: RHYMES -->
+        <!-- 13. RHYMES -->
         <div id="rhymes-game" class="game-container">
             <h2>Le Jeu des Rimes 🎶</h2>
             <p>Trouve le mot qui rime (qui finit par le même son) !</p>
@@ -486,7 +497,7 @@
             <div class="score-board">Score: <span id="rhymes-score">0</span> ⭐</div>
         </div>
 
-        <!-- 13. STORIES TALES -->
+        <!-- 14. STORIES TALES -->
         <div id="stories-game" class="game-container">
             <h2>Le Coin des Histoires 📖</h2>
             <p>Lis la petite histoire et découvre sa morale !</p>
@@ -513,6 +524,7 @@
             buttonElement.classList.add('active');
 
             // Trigger reset updates for unique states if required
+            if(tabName === 'geometry') initGeometryGame();
             if(tabName === 'memory') initMemoryGame();
             if(tabName === 'counting') initCountingGame();
         }
@@ -688,6 +700,68 @@
                 setTimeout(initLogicGame, 2000);
             } else {
                 feedback.innerHTML = '<span style="color: #e74c3c">Regarde bien la suite ! 🔍</span>';
+            }
+        }
+
+        // --- FIXED GEOMETRY & SIZES LOGIC (innerHTML applied) ---
+        const geometryPuzzles = [
+            // --- CONTEXTE 1 : LES FORMES ---
+            { q: "Quelle est cette forme ?", shape: '🔺', ans: 'Le Triangle', opts: ['Le Carré', 'Le Triangle', 'L\'Étoile', 'Le Cercle'] },
+            { q: "Quelle est cette forme ?", shape: '🟡', ans: 'Le Cercle', opts: ['Le Rectangle', 'Le Cercle', 'Le Carré', 'Le Losange'] },
+            
+            // --- CONTEXTE 2 : LES CÔTÉS & COINS ---
+            { q: "Combien de côtés a un carré ? 🟩", shape: '🧩', ans: '4 côtés', opts: ['3 côtés', '4 côtés', '5 côtés', '0 côté'] },
+            { q: "Combien de coins (sommets) a un triangle ? 🔺", shape: '📐', ans: '3 coins', opts: ['2 coins', '3 coins', '4 coins', '5 coins'] },
+            
+            // --- CONTEXTE 3 : TAILLES & COMPARISONS ---
+            { q: "Qui est le plus GRAND ?", shape: '🐭 <span style="font-size: 5.5rem">🐘</span>', ans: 'L\'éléphant 🐘', opts: ['La souris 🐭', 'L\'éléphant 🐘'] },
+            { q: "Qui est le plus PETIT ?", shape: '<span style="font-size: 5.5rem">🌳</span> 🌸', ans: 'La fleur 🌸', opts: ['L\'arbre 🌳', 'La fleur 🌸'] },
+            { q: "Lequel est le plus LONG ?", shape: '✏️ <span style="letter-spacing: -10px;">✏️✏️</span>', ans: 'Le grand crayon ✏️✏️', opts: ['Le petit crayon ✏️', 'Le grand crayon ✏️✏️'] },
+            { q: "Qui est le plus LOURD ?", shape: '🪶 🪨', ans: 'La pierre 🪨', opts: ['La plume 🪶', 'La pierre 🪨'] },
+            { q: "Qui est le plus RAPIDE ?", shape: '🐌 🐆', ans: 'Le guépard 🐆', opts: ['L\'escargot 🐌', 'Le guépard 🐆'] },
+
+            // --- CONTEXTE 4 : POSITIONS SPATIALES ---
+            { q: "Où se trouve le poussin ? 📦🐣", shape: '✨', ans: 'Dehors', opts: ['Dedans', 'Dehors', 'Au-dessus', 'En dessous'] },
+            { q: "Où vole l'oiseau ? ☁️<br>🐦", shape: '✨', ans: 'En dessous', opts: ['En dessous', 'Au-dessus', 'Dedans', 'Derrière'] }
+        ];
+        let geometryIndex = 0;
+        let geometryScore = 0;
+
+        function initGeometryGame() {
+            const puzzle = geometryPuzzles[geometryIndex];
+            
+            document.getElementById('geometry-instruction').innerText = puzzle.q;
+            document.getElementById('geometry-shape').innerHTML = puzzle.shape; // FIXED FROM .innerText
+            document.getElementById('geometry-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('geometry-options');
+            optionsContainer.innerHTML = '';
+
+            if(puzzle.opts.length === 2) {
+                optionsContainer.style.gridTemplateColumns = '1fr';
+            } else {
+                optionsContainer.style.gridTemplateColumns = '1fr 1fr';
+            }
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkGeometryAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkGeometryAnswer(chosen, correct) {
+            const feedback = document.getElementById('geometry-feedback');
+            if(chosen === correct) {
+                geometryScore++;
+                document.getElementById('geometry-score').innerText = geometryScore;
+                feedback.innerHTML = '<span class="success-animation">Génial ! Tu as l\'œil ! 📐✨</span>';
+                geometryIndex = (geometryIndex + 1) % geometryPuzzles.length;
+                setTimeout(initGeometryGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Regarde bien et compare ! 🧐</span>';
             }
         }
 
@@ -938,7 +1012,7 @@
             }
         }
 
-        // --- NEW GAME 1: MEMORY MATCH LOGIC ---
+        // --- MEMORY MATCH LOGIC ---
         const memoryIcons = ['🐶', '🐱', '🦁', '🐸', '🐵', '🐷', '🦊', '🐙'];
         let memoryCards = [];
         let firstCard = null;
@@ -954,7 +1028,6 @@
             secondCard = null;
             canFlip = true;
 
-            // Duplicate array items to build full matching dynamic pairs
             let doubleIcons = [...memoryIcons, ...memoryIcons].sort(() => Math.random() - 0.5);
             memoryCards = [];
 
@@ -994,7 +1067,6 @@
                 secondCard = null;
                 canFlip = true;
 
-                // Reset board automatically if all match targets are reached
                 const allFlipped = memoryCards.every(c => c.classList.contains('flipped'));
                 if (allFlipped) {
                     setTimeout(() => {
@@ -1016,7 +1088,7 @@
             }
         }
 
-        // --- NEW GAME 2: COUNTING MATCH LOGIC ---
+        // --- COUNTING MATCH LOGIC ---
         const countEmojis = ['⭐', '🎈', '🍎', '🐠', '🚗', '🧸'];
         let currentCountTarget = 0;
         let countingScore = 0;
@@ -1026,7 +1098,7 @@
             const optionsContainer = document.getElementById('counting-options');
             document.getElementById('counting-feedback').innerHTML = '';
             
-            currentCountTarget = Math.floor(Math.random() * 8) + 2; // Target value from 2 to 9
+            currentCountTarget = Math.floor(Math.random() * 8) + 2; 
             const randomEmoji = countEmojis[Math.floor(Math.random() * countEmojis.length)];
             
             display.innerHTML = '';
@@ -1063,7 +1135,7 @@
             }
         }
 
-        // --- NEW GAME 3: RHYMES LOGIC ---
+        // --- RHYMES LOGIC ---
         const rhymePuzzles = [
             { target: 'Mouton 🐑', ans: 'Bouton 🔘', opts: ['Bouton 🔘', 'Chapeau 🎩', 'Fraise 🍓', 'Chat 🐱'] },
             { target: 'Souris 🐭', ans: 'Tapis 🪵', opts: ['Tapis 🪵', 'Gâteau 🍰', 'Ballon ⚽', 'Livre 📖'] },
@@ -1121,6 +1193,18 @@
             {
                 title: "🦊 Le Corbeau et le Renard",
                 content: "Un corbeau tenait un fromage dans son bec. Un renard rusé, attiré par l'odeur, commença à flatter le corbeau sur sa magnifique voix. Flatté, le corbeau ouvrit grand le bec pour chanter... et laissa tomber son fromage que le renard s'empressa de manger !<br><br><strong>Morale :</strong> Attention aux personnes trop flatteuses qui cherchent à vous tromper."
+            },
+            {
+                title: "🦆 Le Vilain Petit Canard",
+                content: "Un petit canard est né tout gris et différent des autres. Tout le monde se moquait de lui à la ferme. Triste, il s'enfuit et passa un hiver difficile tout seul. Au printemps, en se regardant dans l'eau, il découvrit qu'il n'était pas un canard... mais qu'il était devenu un magnifique cygne blanc !<br><br><strong>Morale :</strong> Ne jugez jamais les autres sur leur apparence, chacun est unique et grandit à sa façon."
+            },
+            {
+                title: "🐺 Le Garçon qui criait au Loup",
+                content: "Un jeune berger s'ennuyait en gardant ses moutons. Pour s'amuser, il cria très fort : 'Au loup ! Au loup !'. Les villageois accoururent pour l'aider, mais le garçon rigola de sa farce. Il refit la blague plusieurs fois. Un jour, le vrai loup arriva ! Le garçon cria de toutes ses forces, mais plus personne ne vint le croire...<br><br><strong>Morale :</strong> Si l'on ment tout le temps, plus personne ne nous croit, même quand on dit la vérité."
+            },
+            {
+                title: "🐔 La Poule aux Œufs d'Or",
+                content: "Un fermier avait la chance immense d'avoir une poule magique qui pondait un œuf en or pur chaque matin. Devenu très riche mais impatient et trop gourmand, le fermier pensa qu'un gros trésor se cachait dans son ventre. Il décida de la tuer pour tout prendre d'un coup... mais il ne trouva rien du tout et perdit sa poule magique.<br><br><strong>Morale :</strong> La cupidité et l'impatience font perdre tous les trésors que l'on possède déjà."
             }
         ];
         let currentStoryIndex = 0;
@@ -1151,6 +1235,7 @@
         generateMathQuestion();
         initWordGame();
         initLogicGame();
+        initGeometryGame();
         initColorsGame();
         initOddGame();
         initSoundsGame();
