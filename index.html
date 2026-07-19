@@ -131,7 +131,6 @@
             font-weight: bold;
         }
 
-        /* Force l'émoji à devenir une silhouette noire parfaite */
         .shadow-emoji {
             font-size: 4.5rem;
             margin-bottom: 15px;
@@ -208,6 +207,46 @@
             box-shadow: 0 4px 0 var(--text);
         }
 
+        /* Memory Grid */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 320px;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background-color: var(--secondary);
+            border: 3px solid var(--text);
+            border-radius: 10px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--text);
+            user-select: none;
+        }
+
+        .memory-card.flipped {
+            background-color: #fff;
+        }
+
+        /* Counting Game Canvas Display */
+        .counting-display {
+            font-size: 3rem;
+            letter-spacing: 5px;
+            margin: 20px 0;
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
         /* Stories Component */
         .story-box {
             background-color: var(--story-bg);
@@ -254,6 +293,7 @@
         .success-animation {
             color: #2ecc71;
             animation: bounce 0.5s infinite alternate;
+            display: inline-block;
         }
 
         @keyframes bounce {
@@ -317,6 +357,9 @@
             <button class="tab-btn" onclick="switchTab(this, 'shadows')">💡 Jeu des Ombres</button>
             <button class="tab-btn" onclick="switchTab(this, 'health')">🥦 Miam ou Beurk ?</button>
             <button class="tab-btn" onclick="switchTab(this, 'world')">🌍 Découverte</button>
+            <button class="tab-btn" onclick="switchTab(this, 'memory')">🃏 Mémoire</button>
+            <button class="tab-btn" onclick="switchTab(this, 'counting')">⭐ Dénombrement</button>
+            <button class="tab-btn" onclick="switchTab(this, 'rhymes')">🎶 Les Rimes</button>
             <button class="tab-btn" onclick="switchTab(this, 'stories')">📖 Histoires</button>
         </div>
     </div>
@@ -388,8 +431,7 @@
         <div id="shadows-game" class="game-container">
             <h2>L'Ombre Mystère 💡</h2>
             <p>À qui appartient cette ombre noire ?</p>
-            <!-- Ajout de la classe shadow-emoji pour forcer le noir total -->
-            <div class="shadow-emoji" id="shadow-question">🐈⬛</div>
+            <div class="shadow-emoji" id="shadow-question">🐈‍⬛</div>
             <div class="options-grid" id="shadow-options"></div>
             <div class="feedback" id="shadow-feedback"></div>
             <div class="score-board">Score: <span id="shadow-score">0</span> ⭐</div>
@@ -415,7 +457,36 @@
             <div class="score-board">Score: <span id="world-score">0</span> ⭐</div>
         </div>
 
-        <!-- 10. STORIES TALES -->
+        <!-- 10. NEW GAME: MEMORY MATCH -->
+        <div id="memory-game" class="game-container">
+            <h2>Jeu de Mémoire 🃏</h2>
+            <p>Trouve toutes les paires d'animaux cachées !</p>
+            <div class="memory-grid" id="memory-grid"></div>
+            <div class="feedback" id="memory-feedback"></div>
+            <div class="score-board">Score: <span id="memory-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 11. NEW GAME: COUNTING DISCOVERY -->
+        <div id="counting-game" class="game-container">
+            <h2>Combien d'Étoiles ? ⭐</h2>
+            <p>Compte attentivement les objets à l'écran !</p>
+            <div class="counting-display" id="counting-display"></div>
+            <div class="options-grid" id="counting-options"></div>
+            <div class="feedback" id="counting-feedback"></div>
+            <div class="score-board">Score: <span id="counting-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 12. NEW GAME: RHYMES -->
+        <div id="rhymes-game" class="game-container">
+            <h2>Le Jeu des Rimes 🎶</h2>
+            <p>Trouve le mot qui rime (qui finit par le même son) !</p>
+            <div class="question" id="rhyme-question">Qu'est-ce qui rime avec... ?</div>
+            <div class="options-grid" id="rhyme-options"></div>
+            <div class="feedback" id="rhyme-feedback"></div>
+            <div class="score-board">Score: <span id="rhymes-score">0</span> ⭐</div>
+        </div>
+
+        <!-- 13. STORIES TALES -->
         <div id="stories-game" class="game-container">
             <h2>Le Coin des Histoires 📖</h2>
             <p>Lis la petite histoire et découvre sa morale !</p>
@@ -440,6 +511,10 @@
             
             document.getElementById(`${tabName}-game`).classList.add('active');
             buttonElement.classList.add('active');
+
+            // Trigger reset updates for unique states if required
+            if(tabName === 'memory') initMemoryGame();
+            if(tabName === 'counting') initCountingGame();
         }
 
         // --- MATH GAME LOGIC ---
@@ -863,6 +938,172 @@
             }
         }
 
+        // --- NEW GAME 1: MEMORY MATCH LOGIC ---
+        const memoryIcons = ['🐶', '🐱', '🦁', '🐸', '🐵', '🐷', '🦊', '🐙'];
+        let memoryCards = [];
+        let firstCard = null;
+        let secondCard = null;
+        let canFlip = true;
+        let memoryScore = 0;
+
+        function initMemoryGame() {
+            const grid = document.getElementById('memory-grid');
+            document.getElementById('memory-feedback').innerHTML = '';
+            grid.innerHTML = '';
+            firstCard = null;
+            secondCard = null;
+            canFlip = true;
+
+            // Duplicate array items to build full matching dynamic pairs
+            let doubleIcons = [...memoryIcons, ...memoryIcons].sort(() => Math.random() - 0.5);
+            memoryCards = [];
+
+            doubleIcons.forEach((icon, idx) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.icon = icon;
+                card.dataset.id = idx;
+                card.innerText = '❓';
+                card.onclick = () => flipMemoryCard(card);
+                grid.appendChild(card);
+                memoryCards.push(card);
+            });
+        }
+
+        function flipMemoryCard(card) {
+            if (!canFlip || card === firstCard || card.classList.contains('flipped')) return;
+
+            card.classList.add('flipped');
+            card.innerText = card.dataset.icon;
+
+            if (!firstCard) {
+                firstCard = card;
+            } else {
+                secondCard = card;
+                canFlip = false;
+                checkMemoryMatch();
+            }
+        }
+
+        function checkMemoryMatch() {
+            if (firstCard.dataset.icon === secondCard.dataset.icon) {
+                memoryScore++;
+                document.getElementById('memory-score').innerText = memoryScore;
+                document.getElementById('memory-feedback').innerHTML = '<span class="success-animation">Trouvé ! 🎉</span>';
+                firstCard = null;
+                secondCard = null;
+                canFlip = true;
+
+                // Reset board automatically if all match targets are reached
+                const allFlipped = memoryCards.every(c => c.classList.contains('flipped'));
+                if (allFlipped) {
+                    setTimeout(() => {
+                        document.getElementById('memory-feedback').innerHTML = '<span class="success-animation">Gagné ! On recommence ! 🏆</span>';
+                        setTimeout(initMemoryGame, 2000);
+                    }, 500);
+                }
+            } else {
+                setTimeout(() => {
+                    firstCard.classList.remove('flipped');
+                    secondCard.classList.remove('flipped');
+                    firstCard.innerText = '❓';
+                    secondCard.innerText = '❓';
+                    firstCard = null;
+                    secondCard = null;
+                    canFlip = true;
+                    document.getElementById('memory-feedback').innerHTML = '';
+                }, 1000);
+            }
+        }
+
+        // --- NEW GAME 2: COUNTING MATCH LOGIC ---
+        const countEmojis = ['⭐', '🎈', '🍎', '🐠', '🚗', '🧸'];
+        let currentCountTarget = 0;
+        let countingScore = 0;
+
+        function initCountingGame() {
+            const display = document.getElementById('counting-display');
+            const optionsContainer = document.getElementById('counting-options');
+            document.getElementById('counting-feedback').innerHTML = '';
+            
+            currentCountTarget = Math.floor(Math.random() * 8) + 2; // Target value from 2 to 9
+            const randomEmoji = countEmojis[Math.floor(Math.random() * countEmojis.length)];
+            
+            display.innerHTML = '';
+            for(let i = 0; i < currentCountTarget; i++) {
+                display.innerHTML += randomEmoji;
+            }
+
+            let optionChoices = [currentCountTarget];
+            while (optionChoices.length < 4) {
+                let alternate = Math.floor(Math.random() * 9) + 1;
+                if (!optionChoices.includes(alternate)) optionChoices.push(alternate);
+            }
+            optionChoices.sort(() => Math.random() - 0.5);
+
+            optionsContainer.innerHTML = '';
+            optionChoices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = choice;
+                btn.onclick = () => checkCountingAnswer(choice);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkCountingAnswer(chosen) {
+            const feedback = document.getElementById('counting-feedback');
+            if (chosen === currentCountTarget) {
+                countingScore++;
+                document.getElementById('counting-score').innerText = countingScore;
+                feedback.innerHTML = '<span class="success-animation">Tu sais super bien compter ! 🥳</span>';
+                setTimeout(initCountingGame, 1500);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Recompte doucement avec ton doigt ! 👆</span>';
+            }
+        }
+
+        // --- NEW GAME 3: RHYMES LOGIC ---
+        const rhymePuzzles = [
+            { target: 'Mouton 🐑', ans: 'Bouton 🔘', opts: ['Bouton 🔘', 'Chapeau 🎩', 'Fraise 🍓', 'Chat 🐱'] },
+            { target: 'Souris 🐭', ans: 'Tapis 🪵', opts: ['Tapis 🪵', 'Gâteau 🍰', 'Ballon ⚽', 'Livre 📖'] },
+            { target: 'Chapeau 🎩', ans: 'Drapeau ⚑', opts: ['Drapeau ⚑', 'Chien 🐶', 'Pomme 🍎', 'Oiseau 🐦'] },
+            { target: 'Lapin 🐰', ans: 'Sapin 🌲', opts: ['Sapin 🌲', 'Maison 🏠', 'Soleil ☀️', 'Voiture 🚗'] },
+            { target: 'Chat 🐱', ans: 'Chocolat 🍫', opts: ['Chocolat 🍫', 'Banane 🍌', 'Poisson 🐟', 'Avion ✈️'] }
+        ];
+        let rhymeIndex = 0;
+        let rhymesScore = 0;
+
+        function initRhymesGame() {
+            const puzzle = rhymePuzzles[rhymeIndex];
+            document.getElementById('rhyme-question').innerHTML = `Qu'est-ce qui rime avec <span style="color:var(--primary)">${puzzle.target}</span> ?`;
+            document.getElementById('rhyme-feedback').innerHTML = '';
+
+            const optionsContainer = document.getElementById('rhyme-options');
+            optionsContainer.innerHTML = '';
+
+            puzzle.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkRhymeAnswer(opt, puzzle.ans);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkRhymeAnswer(chosen, correct) {
+            const feedback = document.getElementById('rhyme-feedback');
+            if (chosen === correct) {
+                rhymesScore++;
+                document.getElementById('rhymes-score').innerText = rhymesScore;
+                feedback.innerHTML = '<span class="success-animation">Quelle jolie rime ! 🎶✨</span>';
+                rhymeIndex = (rhymeIndex + 1) % rhymePuzzles.length;
+                setTimeout(initRhymesGame, 2000);
+            } else {
+                feedback.innerHTML = '<span style="color: #e74c3c">Écoute bien la fin du mot ! 🔊</span>';
+            }
+        }
+
         // --- STORIES LOGIC ---
         const storiesList = [
             {
@@ -916,6 +1157,7 @@
         initShadowsGame();
         initHealthGame();
         initWorldGame();
+        initRhymesGame();
         initStories();
     </script>
 </body>
